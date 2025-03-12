@@ -1,0 +1,18 @@
+# Set up monitor layout
+xrandr --output DP-4 --primary --mode 3440x1440 --rate 165 --pos 3440x0 \
+       --output DP-0 --mode 3440x1440 --rate 144 --left-of DP-4
+
+# Start Picom for tear-free experience
+picom --backend glx --vsync --xrender-sync-fence &
+
+# Start dwnblocks status bar on startup
+dwmblocks &
+
+# Polkit agent
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+
+# Set wallpaper
+feh --bg-scale /home/matt/Pictures/wallpapers/Arch-Wallpaper-Light.jpeg &
+
+# Launch Thunar daemon in background
+thunar --daemon &
