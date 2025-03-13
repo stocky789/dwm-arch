@@ -11,7 +11,7 @@ echo "Updating system..."
 pacman -Syu --noconfirm
 
 # Install required packages
-echo "Installing Thunar, xrandr, feh, picom, GDM, Starship, yay, and additional utilities..."
+echo "Installing DWM package dependencies"
 pacman -S --noconfirm thunar xorg-xrandr feh picom gdm starship pavucontrol pamixer rofi flameshot wget warp-terminal zsh dwm timeshift pipewire kitty
 
 # Install yay (AUR helper)
