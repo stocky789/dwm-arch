@@ -12,7 +12,7 @@ pacman -Syu --noconfirm
 
 # Install required packages
 echo "Installing DWM package dependencies"
-pacman -S --noconfirm thunar xorg-xrandr feh picom gdm starship pavucontrol ttf-hack-nerd pamixer rofi flameshot wget warp-terminal zsh dwm timeshift pipewire kitty
+pacman -S --noconfirm thunar xorg-xrandr feh picom gdm starship pavucontrol ttf-hack-nerd ttf-nerd-fonts-symbols pamixer rofi flameshot wget warp-terminal zsh dwm timeshift pipewire kitty
 
 # Install yay (AUR helper)
 echo "Installing yay..."

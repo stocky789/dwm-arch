@@ -172,11 +172,11 @@ static void (*bartabmonfns[])(Monitor *) = { NULL /* , customlayoutfn */ };
 #endif // MONOCLE_LAYOUT
 #endif // BAR_TABGROUPS_PATCH
 #if BAR_PANGO_PATCH
-static const char font[]                 = "Source Code Pro:size=15";
+static const char font[]                 = "Hack Nerd Font:size=15";
 #else
-static const char *fonts[]               = { "Source Code Pro:size=15" };
+static const char *fonts[]               = { "Hack Nerd Font:size=15" };
 #endif // BAR_PANGO_PATCH
-static const char dmenufont[]            = "Source Code Pro:size=15";
+static const char dmenufont[]            = "Hack Nerd Font:size=15";
 
 static char c000000[]                    = "#000000"; // placeholder value
 
@@ -413,10 +413,13 @@ static const char *layoutmenu_cmd = "layoutmenu.sh";
 
 #if BAR_LAUNCHER_PATCH
 static const Launcher launchers[] = {
-	/* icon to display      command        */
-	{ "surf",               CMD("surf", "duckduckgo.com") },
+    /* icon (Unicode)     command */
+    { "",               CMD("firefox") },       // Firefox
+    { "",               CMD("warp-terminal") }, // Warp Terminal
+    { "",               CMD("thunar") },       // Thunar
 };
 #endif // BAR_LAUNCHER_PATCH
+
 
 #if COOL_AUTOSTART_PATCH
 static const char *const autostart[] = {
