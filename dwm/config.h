@@ -414,12 +414,12 @@ static const char *layoutmenu_cmd = "layoutmenu.sh";
 #if BAR_LAUNCHER_PATCH
 static const Launcher launchers[] = {
     /* icon (Unicode)     command */
-    { "",               CMD("firefox") },       // Firefox
-    { "",               CMD("warp-terminal") }, // Warp Terminal
-    { "",               CMD("thunar") },       // Thunar
+    { "",               CMD("rofi", "-show", "drun") }, // Rofi App Launcher (Arch Linux Logo)
+    { "",               CMD("firefox") },              // Firefox
+    { "",               CMD("warp-terminal") },        // Warp Terminal
+    { "",               CMD("thunar") },              // Thunar
 };
 #endif // BAR_LAUNCHER_PATCH
-
 
 #if COOL_AUTOSTART_PATCH
 static const char *const autostart[] = {
