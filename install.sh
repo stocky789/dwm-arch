@@ -74,41 +74,51 @@ echo "Enabling and starting GDM..."
 systemctl enable gdm
 systemctl start gdm
 
-# Ask user if they want to install Stocky's personalized DOT files
-read -p "Do you want to install Stocky's personalized DOT files for DWM? (yes/no): " stocky_choice
+# Install Stocky's personalized DOT files
+echo "Installing Stocky's DWM DOT files..."
 
-if [[ "$stocky_choice" == "yes" ]]; then
-    echo "Installing Stocky's DWM DOT files..."
-    
-    # Ensure dwmblocks directory exists
-    DWM_BLOCKS_DIR="$SCRIPT_DIR/dwmblocks"
+# Ensure dwmblocks directory exists
+DWM_BLOCKS_DIR="$SCRIPT_DIR/dwmblocks"
 
-    if [[ ! -d "$DWM_BLOCKS_DIR" ]]; then
-        echo "Error: dwmblocks directory not found. Exiting."
-        exit 1
-    fi
-
+if [[ -d "$DWM_BLOCKS_DIR" ]]; then
     cd "$DWM_BLOCKS_DIR"
-    sudo make install
+    
+    # Apply custom config.h if exists
+    if [[ -f "$DWM_BLOCKS_DIR/config.h" ]]; then
+        echo "Applying custom config.h for dwmblocks..."
+        cp "$DWM_BLOCKS_DIR/config.h" "$DWM_BLOCKS_DIR/config.h.bak" # Backup
+    fi
+    
+    sudo make clean install
     cd "$SCRIPT_DIR"
 
-    # Copy .xprofile from project root directory to user home
-    XPROFILE_SOURCE="$SCRIPT_DIR/.xprofile"
-    XPROFILE_TARGET="$USER_HOME/.xprofile"
-
-    if [[ -f "$XPROFILE_SOURCE" ]]; then
-        echo "Copying .xprofile to user home directory..."
-        cp "$XPROFILE_SOURCE" "$XPROFILE_TARGET"
-        chown "$SUDO_USER:$SUDO_USER" "$XPROFILE_TARGET"
-        chmod +x "$XPROFILE_TARGET"
-    else
-        echo "Warning: .xprofile file not found in the project root."
+    # Ensure dwmblocks starts on login
+    if ! grep -q "dwmblocks &" "$USER_HOME/.xprofile"; then
+        echo "Adding dwmblocks to startup..."
+        echo "dwmblocks &" >> "$USER_HOME/.xprofile"
     fi
+else
+    echo "Warning: dwmblocks directory not found. Skipping installation."
+fi
+
+# Copy .xprofile from project root directory to user home
+XPROFILE_SOURCE="$SCRIPT_DIR/.xprofile"
+XPROFILE_TARGET="$USER_HOME/.xprofile"
+
+if [[ -f "$XPROFILE_SOURCE" ]]; then
+    echo "Copying .xprofile to user home directory..."
+    cp "$XPROFILE_SOURCE" "$XPROFILE_TARGET"
+    chown "$SUDO_USER:$SUDO_USER" "$XPROFILE_TARGET"
+    chmod +x "$XPROFILE_TARGET"
+else
+    echo "Warning: .xprofile file not found in the project root."
 fi
 
 # Ensure wallpaper is set on startup
 echo "Setting default wallpaper..."
-echo "feh --bg-scale /home/$SUDO_USER/Pictures/wallpapers/default.jpg &" >> "$USER_HOME/.xprofile"
+if ! grep -q "feh --bg-scale" "$USER_HOME/.xprofile"; then
+    echo "feh --bg-scale /home/$SUDO_USER/Pictures/wallpapers/default.jpg &" >> "$USER_HOME/.xprofile"
+fi
 
 # Copy wallpapers directory from project root
 echo "Copying wallpapers directory..."
