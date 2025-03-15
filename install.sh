@@ -55,7 +55,7 @@ elif [[ "$dwm_choice" == "source" ]]; then
         echo "Error: dwm directory not found. Exiting."
         exit 1
     fi
-    cd "$(dirname "$0")/dwm"
+    cd "$PWD/dwm"
     sudo make clean install
     cd ..
 fi
