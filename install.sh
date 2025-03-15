@@ -51,8 +51,11 @@ if [[ "$dwm_choice" == "official" ]]; then
     pacman -S --noconfirm dwm
 elif [[ "$dwm_choice" == "source" ]]; then
     echo "Compiling and installing dwm from source..."
-    mkdir -p "$(dirname "$0")/dwm"
-    cd "$(dirname "$0")/dwm" || { echo "Error: Failed to create dwm directory."; exit 1; }
+    if [[ ! -d "$(dirname "$0")/dwm" ]]; then
+        echo "Error: dwm directory not found. Exiting."
+        exit 1
+    fi
+    cd "$(dirname "$0")/dwm"
     sudo make clean install
     cd ..
 fi
@@ -67,30 +70,39 @@ read -p "Do you want to install Stocky's personalized DOT files for DWM? (yes/no
 
 if [[ "$stocky_choice" == "yes" ]]; then
     echo "Installing Stocky's DWM DOT files..."
-    mkdir -p "$(dirname "$0")/dwmblocks"
-    cd "$(dirname "$0")/dwmblocks" || { echo "Error: Failed to create dwmblocks directory."; exit 1; }
     
-    # If repository is not already present, clone it
-    if [[ ! -d .git ]]; then
-        git clone https://github.com/torrinfail/dwmblocks .
+    # Ensure dwmblocks directory exists
+    if [[ ! -d "$(dirname "$0")/dwmblocks" ]]; then
+        echo "Error: dwmblocks directory not found. Exiting."
+        exit 1
     fi
-
+    cd "$(dirname "$0")/dwmblocks"
     sudo make install
     cd ..
-    
-    cp .xprofile "$USER_HOME/.xprofile"
-    chown "$SUDO_USER:$SUDO_USER" "$USER_HOME/.xprofile"
-    chmod +x "$USER_HOME/.xprofile"
+
+    # Copy .xprofile from project root directory to user home
+    if [[ -f "$(dirname "$0")/.xprofile" ]]; then
+        echo "Copying .xprofile to user home directory..."
+        cp "$(dirname "$0")/.xprofile" "$USER_HOME/.xprofile"
+        chown "$SUDO_USER:$SUDO_USER" "$USER_HOME/.xprofile"
+        chmod +x "$USER_HOME/.xprofile"
+    else
+        echo "Warning: .xprofile file not found in the project root."
+    fi
 fi
 
 # Ensure wallpaper is set on startup
 echo "Setting default wallpaper..."
 echo "feh --bg-scale /home/$SUDO_USER/Pictures/wallpapers/default.jpg &" >> "$USER_HOME/.xprofile"
 
-# Copy wallpapers directory
+# Copy wallpapers directory from project root
 echo "Copying wallpapers directory..."
-mkdir -p "$USER_HOME/Pictures/"
-cp -r "$(dirname "$0")/wallpapers" "$USER_HOME/Pictures/"
-chown -R $SUDO_USER:$SUDO_USER "$USER_HOME/Pictures/wallpapers"
+mkdir -p "$USER_HOME/Pictures/wallpapers"
+if [[ -d "$(dirname "$0")/wallpapers" ]]; then
+    cp -r "$(dirname "$0")/wallpapers" "$USER_HOME/Pictures/"
+else
+    echo "Warning: wallpapers directory not found, skipping."
+fi
+chown -R "$SUDO_USER:$SUDO_USER" "$USER_HOME/Pictures/wallpapers"
 
 echo "Installation complete."
