@@ -48,25 +48,18 @@ rm -rf "$USER_HOME/yay-bin"
 echo "Installing warp-terminal from AUR..."
 sudo -u "$SUDO_USER" yay -S --noconfirm warp-terminal
 
-# Ask user how they want to install dwm
-read -p "Do you want to install the official dwm package or compile from source? (official/source): " dwm_choice
+# Always install dwm from source
+echo "Compiling and installing dwm from source..."
+DWM_DIR="$SCRIPT_DIR/dwm"
 
-if [[ "$dwm_choice" == "official" ]]; then
-    echo "Installing dwm from Arch repo..."
-    pacman -S --noconfirm dwm
-elif [[ "$dwm_choice" == "source" ]]; then
-    echo "Compiling and installing dwm from source..."
-    DWM_DIR="$SCRIPT_DIR/dwm"
-
-    if [[ ! -d "$DWM_DIR" ]]; then
-        echo "Error: dwm directory not found. Exiting."
-        exit 1
-    fi
-
-    cd "$DWM_DIR"
-    sudo make clean install
-    cd "$SCRIPT_DIR"
+if [[ ! -d "$DWM_DIR" ]]; then
+    echo "Error: dwm directory not found. Exiting."
+    exit 1
 fi
+
+cd "$DWM_DIR"
+sudo make clean install
+cd "$SCRIPT_DIR"
 
 # Enable and start GDM
 echo "Enabling and starting GDM..."
