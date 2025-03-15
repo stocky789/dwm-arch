@@ -13,12 +13,12 @@ pacman -Syu --noconfirm
 # Ask user if they are installing on an NVIDIA system
 read -p "Are you installing on a system with an NVIDIA GPU? (yes/no): " nvidia_choice
 
-# Install required packages
+# Install required packages (excluding warp-terminal and dwm for now)
 echo "Installing DWM package dependencies..."
 pacman -S --needed --noconfirm \
     thunar xorg-server xorg-xinit xorg-xrandr xorg-xsetroot feh picom gdm starship \
     pavucontrol ttf-hack-nerd ttf-nerd-fonts-symbols pamixer rofi flameshot wget \
-    warp-terminal zsh dwm timeshift pipewire pipewire-pulse pipewire-alsa \
+    zsh timeshift pipewire pipewire-pulse pipewire-alsa \
     kitty lxappearance nm-connection-editor ttf-font-awesome dunst
 
 # Install NVIDIA drivers if selected
@@ -41,6 +41,23 @@ sudo -u "$SUDO_USER" makepkg -si --noconfirm
 cd ~
 rm -rf "$USER_HOME/yay-bin"
 
+# Install warp-terminal from AUR (after yay is installed)
+echo "Installing warp-terminal from AUR..."
+sudo -u "$SUDO_USER" yay -S --noconfirm warp-terminal
+
+# Ask user how they want to install dwm
+read -p "Do you want to install the official dwm package or compile from source? (official/source): " dwm_choice
+
+if [[ "$dwm_choice" == "official" ]]; then
+    echo "Installing dwm from Arch repo..."
+    pacman -S --noconfirm dwm
+elif [[ "$dwm_choice" == "source" ]]; then
+    echo "Compiling and installing dwm from source..."
+    cd "$(dirname "$0")/dwm" || { echo "Error: dwm directory not found."; exit 1; }
+    sudo make clean install
+    cd ..
+fi
+
 # Enable and start GDM
 echo "Enabling and starting GDM..."
 systemctl enable gdm
@@ -51,9 +68,7 @@ read -p "Do you want to install Stocky's personalized DOT files for DWM? (yes/no
 
 if [[ "$stocky_choice" == "yes" ]]; then
     echo "Installing Stocky's DWM DOT files..."
-    cd "$(dirname "$0")/dwm" || { echo "Error: dwm directory not found."; exit 1; }
-    sudo make install
-    cd ../dwmblocks || { echo "Error: dwmblocks directory not found."; exit 1; }
+    cd "$(dirname "$0")/dwmblocks" || { echo "Error: dwmblocks directory not found."; exit 1; }
     sudo make install
     cd ..
     cp .xprofile "$USER_HOME/.xprofile"
@@ -63,12 +78,12 @@ fi
 
 # Ensure wallpaper is set on startup
 echo "Setting default wallpaper..."
-echo "feh --bg-scale /home/$SUDO_USER/Pictures/wallpapers/default.jpg &" >> "/home/$SUDO_USER/.xprofile"
+echo "feh --bg-scale /home/$SUDO_USER/Pictures/wallpapers/default.jpg &" >> "$USER_HOME/.xprofile"
 
 # Copy wallpapers directory
 echo "Copying wallpapers directory..."
-mkdir -p "/home/$SUDO_USER/Pictures/"
-cp -r "$(dirname "$0")/wallpapers" "/home/$SUDO_USER/Pictures/"
-chown -R $SUDO_USER:$SUDO_USER "/home/$SUDO_USER/Pictures/wallpapers"
+mkdir -p "$USER_HOME/Pictures/"
+cp -r "$(dirname "$0")/wallpapers" "$USER_HOME/Pictures/"
+chown -R $SUDO_USER:$SUDO_USER "$USER_HOME/Pictures/wallpapers"
 
 echo "Installation complete."
