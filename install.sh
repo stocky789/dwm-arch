@@ -119,7 +119,7 @@ read -p "Do you want to keep the xrandr display setup? (yes/no): " xrandr_choice
 
 if [[ "$xrandr_choice" == "no" ]]; then
     echo "Commenting out xrandr setup in .xprofile..."
-    sed -i 's/^xrandr --output/# xrandr --output/' "$USER_HOME/.xprofile"
+    sed -i 's|^\(xrandr --output\)|# \1|' "$USER_HOME/.xprofile"
 fi
 
 # Copy Rofi theme
@@ -133,6 +133,13 @@ if [[ -f "$ROFI_THEME_SOURCE" ]]; then
     cp "$ROFI_THEME_SOURCE" "$ROFI_THEME_TARGET/"
     chown "$SUDO_USER:$SUDO_USER" "$ROFI_THEME_TARGET/simple-tokyonight.rasi"
     echo "Rofi theme copied successfully."
+
+    # Set Rofi theme in config
+    ROFI_CONFIG="$USER_HOME/.config/rofi/config.rasi"
+    mkdir -p "$USER_HOME/.config/rofi"
+    echo 'configuration { theme: "~/.local/share/rofi/themes/simple-tokyonight.rasi"; }' > "$ROFI_CONFIG"
+    chown "$SUDO_USER:$SUDO_USER" "$ROFI_CONFIG"
+
 else
     echo "Warning: Rofi theme not found in $ROFI_THEME_SOURCE, skipping."
 fi
