@@ -46,11 +46,20 @@ echo "Enabling and starting GDM..."
 systemctl enable gdm
 systemctl start gdm
 
-# Copy .xprofile file
-echo "Copying .xprofile..."
-cp "$(dirname "$0")/.xprofile" "/home/$SUDO_USER/.xprofile"
-chown $SUDO_USER:$SUDO_USER "/home/$SUDO_USER/.xprofile"
-chmod +x "/home/$SUDO_USER/.xprofile"
+# Ask user if they want to install Stocky's personalized DOT files
+read -p "Do you want to install Stocky's personalized DOT files for DWM? (yes/no): " stocky_choice
+
+if [[ "$stocky_choice" == "yes" ]]; then
+    echo "Installing Stocky's DWM DOT files..."
+    cd "$(dirname "$0")/dwm" || { echo "Error: dwm directory not found."; exit 1; }
+    sudo make install
+    cd ../dwmblocks || { echo "Error: dwmblocks directory not found."; exit 1; }
+    sudo make install
+    cd ..
+    cp .xprofile "$USER_HOME/.xprofile"
+    chown "$SUDO_USER:$SUDO_USER" "$USER_HOME/.xprofile"
+    chmod +x "$USER_HOME/.xprofile"
+fi
 
 # Ensure wallpaper is set on startup
 echo "Setting default wallpaper..."
