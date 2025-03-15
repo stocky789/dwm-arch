@@ -134,12 +134,12 @@ if [[ -f "$ROFI_THEME_SOURCE" ]]; then
     chown "$SUDO_USER:$SUDO_USER" "$ROFI_THEME_TARGET/simple-tokyonight.rasi"
     echo "Rofi theme copied successfully."
 
-    # Set Rofi theme in config
+    # Set Rofi theme in config with the correct syntax
     ROFI_CONFIG="$USER_HOME/.config/rofi/config.rasi"
     mkdir -p "$USER_HOME/.config/rofi"
-    echo 'configuration { theme: "~/.local/share/rofi/themes/simple-tokyonight.rasi"; }' > "$ROFI_CONFIG"
+    echo '@theme "~/.local/share/rofi/themes/simple-tokyonight.rasi"' > "$ROFI_CONFIG"
     chown "$SUDO_USER:$SUDO_USER" "$ROFI_CONFIG"
-
+    echo "Rofi theme configured successfully."
 else
     echo "Warning: Rofi theme not found in $ROFI_THEME_SOURCE, skipping."
 fi
