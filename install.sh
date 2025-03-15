@@ -35,18 +35,26 @@ if [[ "$nvidia_choice" == "yes" ]]; then
     mkinitcpio -P
 fi
 
-# Install yay (AUR helper)
-echo "Installing yay..."
-pacman -S --needed --noconfirm git base-devel
-sudo -u "$SUDO_USER" git clone https://aur.archlinux.org/yay-bin.git "$USER_HOME/yay-bin"
-cd "$USER_HOME/yay-bin"
-sudo -u "$SUDO_USER" makepkg -si --noconfirm
-cd "$SCRIPT_DIR"
-rm -rf "$USER_HOME/yay-bin"
+# Check if yay is installed
+if ! command -v yay &> /dev/null; then
+    echo "yay not found. Installing yay..."
+    pacman -S --needed --noconfirm git base-devel
+    sudo -u "$SUDO_USER" git clone https://aur.archlinux.org/yay-bin.git "$USER_HOME/yay-bin"
+    cd "$USER_HOME/yay-bin"
+    sudo -u "$SUDO_USER" makepkg -si --noconfirm
+    cd "$SCRIPT_DIR"
+    rm -rf "$USER_HOME/yay-bin"
+else
+    echo "yay is already installed. Skipping installation."
+fi
 
-# Install warp-terminal from AUR
-echo "Installing warp-terminal from AUR..."
-sudo -u "$SUDO_USER" yay -S --noconfirm warp-terminal
+# Check if warp-terminal is installed
+if ! pacman -Q warp-terminal-bin &> /dev/null; then
+    echo "Installing warp-terminal from AUR..."
+    sudo -u "$SUDO_USER" yay -S --noconfirm warp-terminal-bin
+else
+    echo "warp-terminal is already installed. Skipping installation."
+fi
 
 # Always install dwm from source
 echo "Compiling and installing dwm from source..."
