@@ -1,8 +1,14 @@
+#!/bin/bash
+
 # Ensure the script is run as root
 if [[ $EUID -ne 0 ]]; then
     echo "Please run this script as root (using sudo)."
     exit 1
 fi
+
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+USER_HOME=$(eval echo ~$SUDO_USER)
 
 # Update system
 echo "Updating system..."
@@ -31,12 +37,11 @@ fi
 
 # Install yay (AUR helper)
 echo "Installing yay..."
-USER_HOME=$(eval echo ~$SUDO_USER)
 pacman -S --needed --noconfirm git base-devel
 sudo -u "$SUDO_USER" git clone https://aur.archlinux.org/yay-bin.git "$USER_HOME/yay-bin"
 cd "$USER_HOME/yay-bin"
 sudo -u "$SUDO_USER" makepkg -si --noconfirm
-cd ~
+cd "$SCRIPT_DIR"
 rm -rf "$USER_HOME/yay-bin"
 
 # Install warp-terminal from AUR
@@ -51,13 +56,16 @@ if [[ "$dwm_choice" == "official" ]]; then
     pacman -S --noconfirm dwm
 elif [[ "$dwm_choice" == "source" ]]; then
     echo "Compiling and installing dwm from source..."
-    if [[ ! -d "$(dirname "$0")/dwm" ]]; then
+    DWM_DIR="$SCRIPT_DIR/dwm"
+
+    if [[ ! -d "$DWM_DIR" ]]; then
         echo "Error: dwm directory not found. Exiting."
         exit 1
     fi
-    cd "$PWD/dwm"
+
+    cd "$DWM_DIR"
     sudo make clean install
-    cd ..
+    cd "$SCRIPT_DIR"
 fi
 
 # Enable and start GDM
@@ -72,20 +80,26 @@ if [[ "$stocky_choice" == "yes" ]]; then
     echo "Installing Stocky's DWM DOT files..."
     
     # Ensure dwmblocks directory exists
-    if [[ ! -d "$(dirname "$0")/dwmblocks" ]]; then
+    DWM_BLOCKS_DIR="$SCRIPT_DIR/dwmblocks"
+
+    if [[ ! -d "$DWM_BLOCKS_DIR" ]]; then
         echo "Error: dwmblocks directory not found. Exiting."
         exit 1
     fi
-    cd "$(dirname "$0")/dwmblocks"
+
+    cd "$DWM_BLOCKS_DIR"
     sudo make install
-    cd ..
+    cd "$SCRIPT_DIR"
 
     # Copy .xprofile from project root directory to user home
-    if [[ -f "$(dirname "$0")/.xprofile" ]]; then
+    XPROFILE_SOURCE="$SCRIPT_DIR/.xprofile"
+    XPROFILE_TARGET="$USER_HOME/.xprofile"
+
+    if [[ -f "$XPROFILE_SOURCE" ]]; then
         echo "Copying .xprofile to user home directory..."
-        cp "$(dirname "$0")/.xprofile" "$USER_HOME/.xprofile"
-        chown "$SUDO_USER:$SUDO_USER" "$USER_HOME/.xprofile"
-        chmod +x "$USER_HOME/.xprofile"
+        cp "$XPROFILE_SOURCE" "$XPROFILE_TARGET"
+        chown "$SUDO_USER:$SUDO_USER" "$XPROFILE_TARGET"
+        chmod +x "$XPROFILE_TARGET"
     else
         echo "Warning: .xprofile file not found in the project root."
     fi
@@ -97,12 +111,17 @@ echo "feh --bg-scale /home/$SUDO_USER/Pictures/wallpapers/default.jpg &" >> "$US
 
 # Copy wallpapers directory from project root
 echo "Copying wallpapers directory..."
-mkdir -p "$USER_HOME/Pictures/wallpapers"
-if [[ -d "$(dirname "$0")/wallpapers" ]]; then
-    cp -r "$(dirname "$0")/wallpapers" "$USER_HOME/Pictures/"
+WALLPAPER_SOURCE="$SCRIPT_DIR/wallpapers"
+WALLPAPER_TARGET="$USER_HOME/Pictures/wallpapers"
+
+mkdir -p "$WALLPAPER_TARGET"
+
+if [[ -d "$WALLPAPER_SOURCE" ]]; then
+    cp -r "$WALLPAPER_SOURCE" "$USER_HOME/Pictures/"
 else
     echo "Warning: wallpapers directory not found, skipping."
 fi
-chown -R "$SUDO_USER:$SUDO_USER" "$USER_HOME/Pictures/wallpapers"
+
+chown -R "$SUDO_USER:$SUDO_USER" "$WALLPAPER_TARGET"
 
 echo "Installation complete."
