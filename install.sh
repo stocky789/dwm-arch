@@ -10,18 +10,36 @@ fi
 echo "Updating system..."
 pacman -Syu --noconfirm
 
+# Ask user if they are installing on an NVIDIA system
+read -p "Are you installing on a system with an NVIDIA GPU? (yes/no): " nvidia_choice
+
 # Install required packages
-echo "Installing DWM package dependencies"
-pacman -S --noconfirm thunar xorg-xrandr feh picom gdm starship pavucontrol ttf-hack-nerd ttf-nerd-fonts-symbols pamixer rofi flameshot wget warp-terminal zsh dwm timeshift pipewire kitty
+echo "Installing DWM package dependencies..."
+pacman -S --noconfirm \
+    thunar xorg-server xorg-xinit xorg-xrandr xorg-xsetroot feh picom gdm starship \
+    pavucontrol ttf-hack-nerd ttf-nerd-fonts-symbols pamixer rofi flameshot wget \
+    warp-terminal zsh dwm timeshift pipewire pipewire-pulse pipewire-alsa \
+    kitty lxappearance nm-connection-editor ttf-font-awesome dunst
+
+# Install NVIDIA drivers if selected
+if [[ "$nvidia_choice" == "yes" ]]; then
+    echo "Installing NVIDIA drivers with the open kernel..."
+    pacman -S --noconfirm nvidia-open nvidia-utils nvidia-settings lib32-nvidia-utils
+    echo "Enabling NVIDIA DRM Modeset..."
+    echo 'options nvidia NVreg_UsePageAttributeTable=1' > /etc/modprobe.d/nvidia.conf
+    echo 'options nvidia_drm modeset=1' > /etc/modprobe.d/nvidia-drm.conf
+    mkinitcpio -P
+fi
 
 # Install yay (AUR helper)
 echo "Installing yay..."
+USER_HOME=$(eval echo ~$SUDO_USER)
 pacman -S --needed --noconfirm git base-devel
-sudo -u $SUDO_USER git clone https://aur.archlinux.org/yay-bin.git /home/$SUDO_USER/yay-bin
-cd /home/$SUDO_USER/yay-bin
-sudo -u $SUDO_USER makepkg -si --noconfirm
+sudo -u "$SUDO_USER" git clone https://aur.archlinux.org/yay-bin.git "$USER_HOME/yay-bin"
+cd "$USER_HOME/yay-bin"
+sudo -u "$SUDO_USER" makepkg -si --noconfirm
 cd ~
-rm -rf /home/$SUDO_USER/yay-bin
+rm -rf "$USER_HOME/yay-bin"
 
 # Enable and start GDM
 echo "Enabling and starting GDM..."
@@ -31,7 +49,12 @@ systemctl start gdm
 # Copy .xprofile file
 echo "Copying .xprofile..."
 cp "$(dirname "$0")/.xprofile" "/home/$SUDO_USER/.xprofile"
+chown $SUDO_USER:$SUDO_USER "/home/$SUDO_USER/.xprofile"
 chmod +x "/home/$SUDO_USER/.xprofile"
+
+# Ensure wallpaper is set on startup
+echo "Setting default wallpaper..."
+echo "feh --bg-scale /home/$SUDO_USER/Pictures/wallpapers/default.jpg &" >> "/home/$SUDO_USER/.xprofile"
 
 # Copy wallpapers directory
 echo "Copying wallpapers directory..."

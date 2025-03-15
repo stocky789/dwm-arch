@@ -16,3 +16,6 @@ feh --bg-scale /home/matt/Pictures/wallpapers/Arch-Wallpaper-Light.jpeg &
 
 # Launch Thunar daemon in background
 thunar --daemon &
+
+#Launch nextcloud on startup
+nextcloud --background &
