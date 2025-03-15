@@ -114,6 +114,14 @@ else
     echo "Warning: .xprofile file not found in the project root."
 fi
 
+# Ask if user wants to copy the xrandr config
+read -p "Do you want to keep the xrandr display setup? (yes/no): " xrandr_choice
+
+if [[ "$xrandr_choice" == "no" ]]; then
+    echo "Commenting out xrandr setup in .xprofile..."
+    sed -i 's/^xrandr --output/# xrandr --output/' "$USER_HOME/.xprofile"
+fi
+
 # Ensure wallpaper is set on startup
 echo "Setting default wallpaper..."
 if ! grep -q "feh --bg-scale" "$USER_HOME/.xprofile"; then
