@@ -122,6 +122,21 @@ if [[ "$xrandr_choice" == "no" ]]; then
     sed -i 's/^xrandr --output/# xrandr --output/' "$USER_HOME/.xprofile"
 fi
 
+# Copy Rofi theme
+ROFI_THEME_SOURCE="$SCRIPT_DIR/rofi/themes/simple-tokyonight.rasi"
+ROFI_THEME_TARGET="$USER_HOME/.local/share/rofi/themes"
+
+echo "Installing Rofi theme..."
+mkdir -p "$ROFI_THEME_TARGET"
+
+if [[ -f "$ROFI_THEME_SOURCE" ]]; then
+    cp "$ROFI_THEME_SOURCE" "$ROFI_THEME_TARGET/"
+    chown "$SUDO_USER:$SUDO_USER" "$ROFI_THEME_TARGET/simple-tokyonight.rasi"
+    echo "Rofi theme copied successfully."
+else
+    echo "Warning: Rofi theme not found in $ROFI_THEME_SOURCE, skipping."
+fi
+
 # Ensure wallpaper is set on startup
 echo "Setting default wallpaper..."
 if ! grep -q "feh --bg-scale" "$USER_HOME/.xprofile"; then
