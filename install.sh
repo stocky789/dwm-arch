@@ -68,9 +68,8 @@ fi
 sudo make clean install
 
 # Enable and start GDM
-echo "Enabling and starting GDM..."
+echo "Enabling GDM..."
 systemctl enable gdm
-systemctl start gdm
 
 # Install Stocky's personalized DOT files
 echo "Installing Stocky's DWM DOT files..."
