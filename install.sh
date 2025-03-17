@@ -21,7 +21,7 @@ read -p "Are you installing on a system with an NVIDIA GPU? (yes/no): " nvidia_c
 echo "Installing DWM package dependencies..."
 pacman -S --needed --noconfirm \
     thunar xorg-server xorg-xinit xorg-xrandr xorg-xsetroot feh picom gdm starship \
-    pavucontrol ttf-hack-nerd ttf-nerd-fonts-symbols pamixer rofi flameshot wget \
+    pavucontrol ttf-hack-nerd ttf-nerd-fonts-symbols pamixer gamemode rofi flameshot wget \
     zsh timeshift pipewire pipewire-pulse pipewire-alsa \
     kitty lxappearance nm-connection-editor ttf-font-awesome dunst
 
