@@ -58,16 +58,14 @@ fi
 
 # Always install dwm from source
 echo "Compiling and installing dwm from source..."
-DWM_DIR="$SCRIPT_DIR/dwm-arch"
+DWM_DIR="$SCRIPT_DIR"
 
 if [[ ! -d "$DWM_DIR" ]]; then
-    echo "Error: dwm-arch directory not found. Exiting."
+    echo "Error: Expected to be in dwm-arch but directory not found. Exiting."
     exit 1
 fi
 
-cd "$DWM_DIR"
 sudo make clean install
-cd "$SCRIPT_DIR"
 
 # Enable and start GDM
 echo "Enabling and starting GDM..."
@@ -78,7 +76,7 @@ systemctl start gdm
 echo "Installing Stocky's DWM DOT files..."
 
 # Ensure dwmblocks directory exists
-DWM_BLOCKS_DIR="$SCRIPT_DIR/dwm-arch/dwmblocks"
+DWM_BLOCKS_DIR="$SCRIPT_DIR/dwmblocks"
 
 if [[ -d "$DWM_BLOCKS_DIR" ]]; then
     cd "$DWM_BLOCKS_DIR"
