@@ -58,21 +58,41 @@ fi
 
 # Always install dwm from source
 echo "Compiling and installing dwm from source..."
-DWM_DIR="$SCRIPT_DIR"
+DWM_DIR="$SCRIPT_DIR/dwm"
 
 if [[ ! -d "$DWM_DIR" ]]; then
-    echo "Error: Expected to be in dwm-arch but directory not found. Exiting."
+    echo "Error: dwm directory not found inside dwm-arch. Exiting."
     exit 1
 fi
 
+cd "$DWM_DIR"
 sudo make clean install
+cd "$SCRIPT_DIR"
 
 # Enable and start GDM
 echo "Enabling GDM..."
 systemctl enable gdm
 
-# Install Stocky's personalized DOT files
-echo "Installing Stocky's DWM DOT files..."
+# Prompt for Dotfile Installation
+read -p "Do you want to install custom DWM dotfiles? (yes/no): " dotfiles_choice
+
+if [[ "$dotfiles_choice" == "yes" ]]; then
+    echo "Installing Stocky's DWM dotfiles..."
+    
+    # Ensure .config exists and copy configuration files
+    mkdir -p "$USER_HOME/.config"
+    cp -r "$SCRIPT_DIR/.config" "$USER_HOME/"
+    
+    # Copy .xprofile
+    cp "$SCRIPT_DIR/.xprofile" "$USER_HOME/.xprofile"
+    
+    # Set correct permissions
+    chown -R "$SUDO_USER:$SUDO_USER" "$USER_HOME/.config" "$USER_HOME/.xprofile"
+    
+    echo "Dotfiles installed successfully."
+else
+    echo "Skipping dotfile installation."
+fi
 
 # Ensure dwmblocks directory exists
 DWM_BLOCKS_DIR="$SCRIPT_DIR/dwmblocks"
@@ -96,19 +116,6 @@ if [[ -d "$DWM_BLOCKS_DIR" ]]; then
     fi
 else
     echo "Warning: dwmblocks directory not found. Skipping installation."
-fi
-
-# Copy .xprofile from project root directory to user home
-XPROFILE_SOURCE="$SCRIPT_DIR/.xprofile"
-XPROFILE_TARGET="$USER_HOME/.xprofile"
-
-if [[ -f "$XPROFILE_SOURCE" ]]; then
-    echo "Copying .xprofile to user home directory..."
-    cp "$XPROFILE_SOURCE" "$XPROFILE_TARGET"
-    chown "$SUDO_USER:$SUDO_USER" "$XPROFILE_TARGET"
-    chmod +x "$XPROFILE_TARGET"
-else
-    echo "Warning: .xprofile file not found in the project root."
 fi
 
 # Ask if user wants to copy the xrandr config
