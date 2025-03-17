@@ -126,4 +126,24 @@ if [[ "$xrandr_choice" == "no" ]]; then
     sed -i 's|^\(xrandr --output\)|# \1|' "$USER_HOME/.xprofile"
 fi
 
+# Ask user if they want to set up OpenSSH
+read -p "Do you want to set up OpenSSH for remote access? (yes/no): " ssh_choice
+
+if [[ "$ssh_choice" == "yes" ]]; then
+    echo "Installing and configuring OpenSSH..."
+    pacman -S --needed --noconfirm openssh
+
+    # Enable password authentication and allow root login
+    sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+    sed -i 's/^#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+    # Restart and enable SSH service
+    systemctl enable sshd
+    systemctl restart sshd
+    echo "OpenSSH has been set up and enabled."
+else
+    echo "Skipping OpenSSH setup."
+fi
+
+
 echo "Installation complete."
