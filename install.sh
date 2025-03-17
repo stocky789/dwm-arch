@@ -58,10 +58,10 @@ fi
 
 # Always install dwm from source
 echo "Compiling and installing dwm from source..."
-DWM_DIR="$SCRIPT_DIR/dwm"
+DWM_DIR="$SCRIPT_DIR/dwm-arch"
 
 if [[ ! -d "$DWM_DIR" ]]; then
-    echo "Error: dwm directory not found. Exiting."
+    echo "Error: dwm-arch directory not found. Exiting."
     exit 1
 fi
 
@@ -78,7 +78,7 @@ systemctl start gdm
 echo "Installing Stocky's DWM DOT files..."
 
 # Ensure dwmblocks directory exists
-DWM_BLOCKS_DIR="$SCRIPT_DIR/dwmblocks"
+DWM_BLOCKS_DIR="$SCRIPT_DIR/dwm-arch/dwmblocks"
 
 if [[ -d "$DWM_BLOCKS_DIR" ]]; then
     cd "$DWM_BLOCKS_DIR"
@@ -121,48 +121,5 @@ if [[ "$xrandr_choice" == "no" ]]; then
     echo "Commenting out xrandr setup in .xprofile..."
     sed -i 's|^\(xrandr --output\)|# \1|' "$USER_HOME/.xprofile"
 fi
-
-# Copy Rofi theme
-ROFI_THEME_SOURCE="$SCRIPT_DIR/rofi/themes/simple-tokyonight.rasi"
-ROFI_THEME_TARGET="$USER_HOME/.local/share/rofi/themes"
-
-echo "Installing Rofi theme..."
-mkdir -p "$ROFI_THEME_TARGET"
-
-if [[ -f "$ROFI_THEME_SOURCE" ]]; then
-    cp "$ROFI_THEME_SOURCE" "$ROFI_THEME_TARGET/"
-    chown "$SUDO_USER:$SUDO_USER" "$ROFI_THEME_TARGET/simple-tokyonight.rasi"
-    echo "Rofi theme copied successfully."
-
-    # Set Rofi theme in config with the correct syntax
-    ROFI_CONFIG="$USER_HOME/.config/rofi/config.rasi"
-    mkdir -p "$USER_HOME/.config/rofi"
-    echo '@theme "~/.local/share/rofi/themes/simple-tokyonight.rasi"' > "$ROFI_CONFIG"
-    chown "$SUDO_USER:$SUDO_USER" "$ROFI_CONFIG"
-    echo "Rofi theme configured successfully."
-else
-    echo "Warning: Rofi theme not found in $ROFI_THEME_SOURCE, skipping."
-fi
-
-# Ensure wallpaper is set on startup
-echo "Setting default wallpaper..."
-if ! grep -q "feh --bg-scale" "$USER_HOME/.xprofile"; then
-    echo "feh --bg-scale /home/$SUDO_USER/Pictures/wallpapers/default.jpg &" >> "$USER_HOME/.xprofile"
-fi
-
-# Copy wallpapers directory from project root
-echo "Copying wallpapers directory..."
-WALLPAPER_SOURCE="$SCRIPT_DIR/wallpapers"
-WALLPAPER_TARGET="$USER_HOME/Pictures/wallpapers"
-
-mkdir -p "$WALLPAPER_TARGET"
-
-if [[ -d "$WALLPAPER_SOURCE" ]]; then
-    cp -r "$WALLPAPER_SOURCE" "$USER_HOME/Pictures/"
-else
-    echo "Warning: wallpapers directory not found, skipping."
-fi
-
-chown -R "$SUDO_USER:$SUDO_USER" "$WALLPAPER_TARGET"
 
 echo "Installation complete."
