@@ -16,7 +16,7 @@ This script automates the installation and configuration of **dwm** (Dynamic Win
 ![Arch Linux](https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Archlinux-logo-light-1200dpi.png/320px-Archlinux-logo-light-1200dpi.png)
 
 ## Prerequisites
-- 🖥 **Arch Linux** installed.
+- 🖥 **Arch Linux** installed (minimal install preferable).
 - 🔑 **Root or sudo privileges**.
 - 🌐 An active internet connection.
 
