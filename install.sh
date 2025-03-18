@@ -23,7 +23,8 @@ pacman -S --needed --noconfirm \
     thunar xorg-server xorg-xinit xorg-xrandr xorg-xsetroot feh picom gdm starship \
     pavucontrol ttf-hack-nerd ttf-nerd-fonts-symbols pamixer gamemode rofi flameshot wget \
     zsh timeshift pipewire pipewire-pulse pipewire-alsa \
-    kitty lxappearance nm-connection-editor ttf-font-awesome dunst
+    kitty lxappearance nm-connection-editor ttf-font-awesome dunst \
+    qt5ct qt6ct gnome-themes-extra xfce4-settings
 
 # Install NVIDIA drivers if selected
 if [[ "$nvidia_choice" == "yes" ]]; then
@@ -46,14 +47,6 @@ if ! command -v yay &> /dev/null; then
     rm -rf "$USER_HOME/yay-bin"
 else
     echo "yay is already installed. Skipping installation."
-fi
-
-# Check if warp-terminal is installed
-if ! pacman -Q warp-terminal-bin &> /dev/null; then
-    echo "Installing warp-terminal from AUR..."
-    sudo -u "$SUDO_USER" yay -S --noconfirm warp-terminal-bin
-else
-    echo "warp-terminal is already installed. Skipping installation."
 fi
 
 # Always install dwm from source
@@ -86,10 +79,71 @@ if [[ "$dotfiles_choice" == "yes" ]]; then
     # Copy .xprofile
     cp "$SCRIPT_DIR/.xprofile" "$USER_HOME/.xprofile"
     
-    # Set correct permissions
-    chown -R "$SUDO_USER:$SUDO_USER" "$USER_HOME/.config" "$USER_HOME/.xprofile"
+    # Ensure .xprofile is executable
+    chmod +x "$USER_HOME/.xprofile"
     
-    echo "Dotfiles installed successfully."
+    # Ensure Pictures folder exists and copy wallpapers
+    echo "Creating Pictures directory and copying wallpapers..."
+    mkdir -p "$USER_HOME/Pictures/wallpapers"
+    cp -r "$SCRIPT_DIR/wallpapers"/* "$USER_HOME/Pictures/wallpapers/"
+    
+    # Set correct permissions
+    chown -R "$SUDO_USER:$SUDO_USER" "$USER_HOME/.config" "$USER_HOME/.xprofile" "$USER_HOME/Pictures"
+
+    echo "Dotfiles and wallpapers installed successfully."
+
+    # Install Hack Nerd Font
+    echo "Installing Hack Nerd Font..."
+    sudo -u "$SUDO_USER" bash -c '
+        mkdir -p ~/.local/share/fonts
+        cd ~/.local/share/fonts
+        wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip
+        unzip Hack.zip
+        fc-cache -fv
+    '
+    echo "Hack Nerd Font installed successfully."
+
+    # Configure Dark Mode for GTK
+    echo "Enabling GTK Dark Mode..."
+    sudo -u "$SUDO_USER" bash -c '
+        mkdir -p ~/.config/gtk-3.0 ~/.config/gtk-4.0
+        echo -e "[Settings]\ngtk-theme-name=Adwaita-dark\ngtk-application-prefer-dark-theme=1" > ~/.config/gtk-3.0/settings.ini
+        echo -e "[Settings]\ngtk-theme-name=Adwaita-dark\ngtk-application-prefer-dark-theme=1" > ~/.config/gtk-4.0/settings.ini
+        echo 'gtk-theme-name="Adwaita-dark"' > ~/.gtkrc-2.0
+    '
+    echo "GTK Dark Mode enabled."
+
+    # Configure Dark Mode for Qt
+    echo "Enabling Qt Dark Mode..."
+    echo 'export QT_QPA_PLATFORMTHEME=qt5ct' >> "$USER_HOME/.xprofile"
+    echo 'export QT_QPA_PLATFORMTHEME=qt6ct' >> "$USER_HOME/.xprofile"
+    echo "Qt Dark Mode enabled."
+
+    # Configure Thunar Dark Mode
+    echo "Enabling Thunar Dark Mode..."
+    sudo -u "$SUDO_USER" bash -c '
+        mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml
+
+        tee ~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml > /dev/null << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xsettings" version="1.0">
+  <property name="Net">
+    <property name="ThemeName" type="string" value="Adwaita-dark"/>
+    <property name="IconThemeName" type="string" value="Adwaita"/>
+  </property>
+</channel>
+EOF
+
+        # Apply settings
+        xfconf-query -c xsettings -p /Net/ThemeName -s "Adwaita-dark"
+        xfconf-query -c xsettings -p /Net/IconThemeName -s "Adwaita"
+
+        # Restart xfsettingsd to apply the theme immediately
+        pkill xfsettingsd || true
+        nohup xfsettingsd --no-daemon > /dev/null 2>&1 &
+    '
+    echo "Thunar Dark Mode enabled."
+
 else
     echo "Skipping dotfile installation."
 fi
@@ -125,25 +179,5 @@ if [[ "$xrandr_choice" == "no" ]]; then
     echo "Commenting out xrandr setup in .xprofile..."
     sed -i '/^xrandr --output/ {N; s/^/# /g}' "$USER_HOME/.xprofile"
 fi
-
-# Ask user if they want to set up OpenSSH
-read -p "Do you want to set up OpenSSH for remote access? (yes/no): " ssh_choice
-
-if [[ "$ssh_choice" == "yes" ]]; then
-    echo "Installing and configuring OpenSSH..."
-    pacman -S --needed --noconfirm openssh
-
-    # Enable password authentication and allow root login
-    sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-    sed -i 's/^#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-
-    # Restart and enable SSH service
-    systemctl enable sshd
-    systemctl restart sshd
-    echo "OpenSSH has been set up and enabled."
-else
-    echo "Skipping OpenSSH setup."
-fi
-
 
 echo "Installation complete."
