@@ -23,7 +23,7 @@ pacman -S --needed --noconfirm \
     thunar xorg-server xorg-xinit xorg-xrandr xorg-xsetroot feh picom gdm starship \
     pavucontrol ttf-hack-nerd ttf-nerd-fonts-symbols pamixer gamemode rofi flameshot wget \
     zsh timeshift pipewire pipewire-pulse pipewire-alsa \
-    kitty lxappearance nm-connection-editor ttf-font-awesome dunst \
+    kitty lxappearance polkit-gnome nm-connection-editor ttf-font-awesome dunst \
     qt5ct qt6ct gnome-themes-extra xfce4-settings
 
 # Install NVIDIA drivers if selected
