@@ -416,7 +416,7 @@ static const Launcher launchers[] = {
     /* icon (Unicode)     command */
     { "",               CMD("rofi", "-show", "drun") }, // Rofi App Launcher (Arch Linux Logo)
     { "",               CMD("firefox") },              // Firefox
-    { "",               CMD("warp-terminal") },        // Warp Terminal
+    { "",               CMD("kitty") },        // Warp Terminal
     { "",               CMD("thunar") },              // Thunar
 };
 #endif // BAR_LAUNCHER_PATCH
@@ -886,7 +886,7 @@ static const char *dmenucmd[] = {
 };
 #endif
 
-static const char *termcmd[]  = { "warp-terminal", NULL };
+static const char *termcmd[]  = { "kitty", NULL };
 
 #if BAR_STATUSCMD_PATCH
 #if BAR_DWMBLOCKS_PATCH
