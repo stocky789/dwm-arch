@@ -62,7 +62,7 @@ cd "$DWM_DIR"
 sudo make clean install
 cd "$SCRIPT_DIR"
 
-# Enable and start GDM
+# Enable GDM
 echo "Enabling GDM..."
 systemctl enable gdm
 
