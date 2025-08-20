@@ -62,10 +62,10 @@ cd "$DWM_DIR"
 sudo make clean install
 cd "$SCRIPT_DIR"
 
-# Enable and start GDM
-# Using --now to start the service immediately
-echo "Enabling and starting GDM..."
-systemctl enable --now gdm
+# Enable GDM
+# The service will start automatically on the next boot
+echo "Enabling GDM..."
+systemctl enable gdm
 
 # Prompt for Dotfile Installation
 read -p "Do you want to install custom DWM dotfiles? (yes/no): " dotfiles_choice
