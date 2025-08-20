@@ -192,7 +192,7 @@ void sighandler(int signum, siginfo_t *si, void *ucontext) {
             setsid();
             execvp(cmd[0], cmd);
             perror(cmd[0]);
-            exit(EXIT_SUCCESS);
+            exit(EXIT_FAILURE);
         }
     } else {
         if (sig == 10) {
