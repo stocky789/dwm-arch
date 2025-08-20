@@ -23,7 +23,7 @@ This script automates the installation and configuration of **dwm** (Dynamic Win
 ## Installation Instructions
 ### 1️⃣ Clone the Repository
    ```sh
-   git clone https://github.com/your-username/dwm-arch.git
+   git clone https://github.com/stocky789/dwm-arch.git
    cd dwm-arch
    ```
 
