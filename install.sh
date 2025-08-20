@@ -63,7 +63,6 @@ sudo make clean install
 cd "$SCRIPT_DIR"
 
 # Enable GDM
-# The service will start automatically on the next boot
 echo "Enabling GDM..."
 systemctl enable gdm
 
