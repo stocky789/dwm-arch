@@ -33,4 +33,10 @@ install: dwmblocks
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/dwmblocks
 
-.PHONY: all options clean install uninstall
+.PHONY: all options clean install uninstall test
+# Build and run tests
+test: tests/test_getstatus
+	./tests/test_getstatus
+
+tests/test_getstatus: tests/test_getstatus.c dwmblocks.c blocks.h
+	${CC} -DNO_X -o $@ tests/test_getstatus.c ${CFLAGS}
