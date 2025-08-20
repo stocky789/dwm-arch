@@ -63,8 +63,9 @@ sudo make clean install
 cd "$SCRIPT_DIR"
 
 # Enable and start GDM
-echo "Enabling GDM..."
-systemctl enable gdm
+# Using --now to start the service immediately
+echo "Enabling and starting GDM..."
+systemctl enable --now gdm
 
 # Prompt for Dotfile Installation
 read -p "Do you want to install custom DWM dotfiles? (yes/no): " dotfiles_choice
