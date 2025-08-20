@@ -274,7 +274,7 @@ void ipc_focused_state_change_event(const int mon_num, const Window client_id,
                                     const ClientState *old_state,
                                     const ClientState *new_state);
 /**
- * Check to see if an event has occured and call the *_change_event functions
+ * Check to see if an event has occurred and call the *_change_event functions
  * accordingly
  *
  * @param mons Address of Monitor pointing to start of linked list
