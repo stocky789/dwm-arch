@@ -103,6 +103,7 @@ void getsigcmds(unsigned int signal) {
 
 void setupsignals() {
     struct sigaction sa = { .sa_sigaction = sighandler, .sa_flags = SA_SIGINFO };
+    sigemptyset(&sa.sa_mask);
 #ifndef __OpenBSD__
     /* initialize all real time signals with dummy handler */
     for (int i = SIGRTMIN; i <= SIGRTMAX; i++) {
@@ -191,7 +192,7 @@ void sighandler(int signum, siginfo_t *si, void *ucontext) {
             setsid();
             execvp(cmd[0], cmd);
             perror(cmd[0]);
-            exit(EXIT_SUCCESS);
+            exit(EXIT_FAILURE);
         }
     } else {
         if (sig == 10) {
